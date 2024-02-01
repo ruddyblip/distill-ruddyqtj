@@ -16,9 +16,13 @@ output:
     toc_float: true
     toc_depth: 2
     self_contained: false
-draft: FALSE
+draft: false
 creative_commons: CC BY
+
+    #subscribe: _subscribe.html
+
 ---
+
 
 
 ```{r setup, include=FALSE}

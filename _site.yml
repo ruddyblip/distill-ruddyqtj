@@ -19,3 +19,13 @@ navbar:
     - icon: fa fa-twitter
       href: https://twitter.com/RuddyEc0
 output: distill::distill_article
+
+    #subscribe: _subscribe.html
+
+
+
+
+
+
+
+

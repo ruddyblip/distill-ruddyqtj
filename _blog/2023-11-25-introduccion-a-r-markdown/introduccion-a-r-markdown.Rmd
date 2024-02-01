@@ -16,8 +16,11 @@ output:
     toc_float: true
     toc_depth: 2
     self_contained: false
-draft: FALSE
+draft: false
 creative_commons: CC BY
+  # (navbar definition here)
+#image: images/pixabay_nature2592000.jpg
+#repository_url: https://github.com/nstrayer/activity_detection_post
 ---
 
 

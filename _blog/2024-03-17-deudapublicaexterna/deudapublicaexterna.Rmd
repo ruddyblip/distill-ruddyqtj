@@ -62,7 +62,8 @@ library(gtExtras)
 library(gridExtra)
 library(babynames)
 library(dplyr)
-
+library(distill)
+library(rmarkdown)
 ```
 
 ```{r echo=FALSE}
@@ -202,7 +203,7 @@ tab_2023 %>%
   mutate(
     Deuda = Deuda.Externa/max(Deuda.Externa) * 100) %>% 
   mutate(
-    Presidente= as.character(Presidente), 
+    Presidente = as.character(Presidente), 
     Año = as.character(Año),
     Presidente = paste0('Presidente: ', Presidente))%>% 
   gt(groupname_col = "Presidente", rowname_col = 'Año') %>% 
@@ -222,7 +223,7 @@ tab_2023 %>%
                fns = list(
                  'Maximum' = ~max(., na.rm = TRUE),
                  'Total' = ~sum(., na.rm = TRUE)),
-               fmt = ~ fmt_number(.,columns = Deuda.Externa, 
+               fmt = ~ fmt_number(., columns = Deuda.Externa, 
                        decimals = 2, 
                        pattern = "$us {x}",
                        sep_mark = ".",
@@ -241,10 +242,13 @@ tab_2023 %>%
     Año                 = md('**Año**'),
     Deuda.Externa       = md('**Deuda Externa**'),
     Partido             = md('**Partido**'),
-    Deuda               = md('**Deu. %**'))
+    Deuda               = md('**Deu. %**')) #%>% 
+
+#gt::gtsave("tab_1.png")
 #%>% 
- #gtsave("tab_1.png")
+# gtsave("tab_mas.png")
 ```
+
 
 ### - Concluion
 
@@ -429,7 +433,7 @@ p4<-data_deuda%>%
                        size = 1, family = "Montserrat",
                        fill = "#FFFAFA", alpha = 0.5,box.color = "cornsilk3",
                        width = unit(11, "lines"))+
-  ggtext::geom_textbox(data = tibble( x=2012, y = 10500, label = "<span style='font-size:7pt;'><span style = 'color:#030303;'>**Periodo 2006-2023**</span> Caracterisado por la implementacion del MESCP. Inicia con la condonacion en el marco de la Iniciativa de Alivio de Deuda Multilateral sin embargo se recurrio al endeudamiento, a pesar de registrar superávit fiscal entre 2006-2013 .</span>"),
+  ggtext::geom_textbox(data = tibble( x=2012, y = 10500, label = "<span style='font-size:7pt;'><span style = 'color:#030303;'>**Periodo 2006-2023**</span> Caracterizado por la implementación del MESCP. Inicia con la condonación en el marco de la Iniciativa de Alivio de Deuda Multilateral sin embargo se recurrió al endeudamiento, a pesar de registrar superávit fiscal entre 2006-2013 .</span>"),
                        aes(x, y, label = label),
                        size = 1, family = "Montserrat",
                        fill = "#FFFAFA", alpha = 0.5, box.color = "cornsilk3",

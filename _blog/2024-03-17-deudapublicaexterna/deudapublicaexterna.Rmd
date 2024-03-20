@@ -1,4 +1,4 @@
---- 
+---
 title: "Evolución de la Deuda Pública Externa de Bolivia 1970-2023"
 description: |
  Hoy exploraremos los datos de la Deuda Pública Externa de Bolivia (1970-2023) a través de gráficos con {ggplot2}, también utilizaremos el paquete {gt}, con la cual podemos construir una amplia variedad de tablas que nos ayudaran modificar el encabezado de la tabla, código auxiliar, etiquetas de las columnas del cuerpo de la tabla entre otras.
@@ -21,30 +21,29 @@ draft: FALSE
 creative_commons: CC BY
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
 # Deuda Pública Externa de Bolivia
-  Según el [Ministerio de Economía y Finanzas Publicas](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/VTCP/ECO_DEUDA_TGN.pdf) la Deuda Pública  _es el dinero que el estado toma prestado de instituciones internacionales o nacionales para pagar gastos de prioridad nacional y acelerar el crecimiento_.
+
+Según el [Ministerio de Economía y Finanzas Publicas](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/VTCP/ECO_DEUDA_TGN.pdf) la Deuda Pública *es el dinero que el estado toma prestado de instituciones internacionales o nacionales para pagar gastos de prioridad nacional y acelerar el crecimiento*.
 
 En ese contexto el endeudamiento público externo tiene una importancia significativa sobre las restricciones que pueda tener la economía boliviana, contraer deuda pública externa no significa obtención de fondos del exterior para poder generar crecimiento y desarrollo, el endeudamiento también implica obligaciones, es decir tener capacidad de pago.
 
-Entre el 1970-2023 la política de endeudamiento de los diferentes gobiernos ha llevado a una situación preocupante, el déficit y el endeudamiento se tornan insostenibles, afectando a variables económicas que depende del funcionamiento real de la economía. El saldo de la deuda pública externa al 31 de diciembre de 2023, alcanzo a 13.687 millones de dólares, incrementándose en 321% entre el 2006 y 2023. 
+Entre el 1970-2023 la política de endeudamiento de los diferentes gobiernos ha llevado a una situación preocupante, el déficit y el endeudamiento se tornan insostenibles, afectando a variables económicas que depende del funcionamiento real de la economía. El saldo de la deuda pública externa al 31 de diciembre de 2023, alcanzo a 13.687 millones de dólares, incrementándose en 321% entre el 2006 y 2023.
 
-![Resultado del grafico realizado con ggplot2 ](deuda.png)
+![Resultado del grafico realizado con ggplot2](deuda.png)
 
-Entre 1970–2023, Bolivia atravesó por tres periodos económicos diferentes, en esa line se abordará cada periodo con la elaboración de una tabla con características como; Presidente, Partido  al cual perteneció y el monto de la Deuda Pública Externa.
+Entre 1970–2023, Bolivia atravesó por tres periodos económicos diferentes, en esa line se abordará cada periodo con la elaboración de una tabla con características como; Presidente, Partido al cual perteneció y el monto de la Deuda Pública Externa.
 
 ### - Primer Periodo 1970-1981
-Este periodo fue caracterizado por gobiernos militares de facto, con una participación del estado en todas las actividades económicas, mediante el gasto público destinado a establecer las condiciones básicas para el desarrollo del sector público como también el sector privado, caracterizado en un contexto externo favorable por la elevación de los precios internacionales y acceso a la banca internacional para financiar el gasto público, incrementando de esta manera la deuda pública,  entre 1970 y 1981 la deuda externa se encontraba en promedio por debajo de $us 1.298 millones de dólares.
 
+Este periodo fue caracterizado por gobiernos militares de facto, con una participación del estado en todas las actividades económicas, mediante el gasto público destinado a establecer las condiciones básicas para el desarrollo del sector público como también el sector privado, caracterizado en un contexto externo favorable por la elevación de los precios internacionales y acceso a la banca internacional para financiar el gasto público, incrementando de esta manera la deuda pública, entre 1970 y 1981 la deuda externa se encontraba en promedio por debajo de \$us 1.298 millones de dólares.
 
 ```{r echo=FALSE}
 library(openxlsx) # Para importar / exportar excel 
 library(magrittr) # Pipe
-library(tidyverse) # Manipulacion de Datos
 library(readxl)
 library(tidyverse)   ##  (incl. the ggplot2 package)
 library(systemfonts) ## fuentes personalizadas (deben estar instaladas en su sistema operativo)
@@ -62,6 +61,7 @@ library(gt)
 library(gtExtras)
 library(gridExtra)
 library(babynames)
+library(dplyr)
 
 ```
 
@@ -122,8 +122,10 @@ tab_70 %>%
     Partido             = md('**Partido**'),
     Deuda             = md('**Deu. %**'))
 ```
+
 ### - Segundo Periodo 1982-2005
-Este periodo es caracterizado por la consolidación de la democracia con una menor participación del estado para estabilizar la economía, así mismo se realizó ajuste económicos y reformas estructurales con la renegociación y condonación de la deuda pública externa. A diferencia del primer periodo se destaca el incremento considerable de la deuda externa llegando a registrar la gestión 2003 $us 5.143 millones de dólares, el mas alto  en todo este periodo, a partir del 2004 se revirtió la tendencia con una reducción de la deuda gracias a la renegociación y condonación de la deuda pública externa.
+
+Este periodo es caracterizado por la consolidación de la democracia con una menor participación del estado para estabilizar la economía, así mismo se realizó ajuste económicos y reformas estructurales con la renegociación y condonación de la deuda pública externa. A diferencia del primer periodo se destaca el incremento considerable de la deuda externa llegando a registrar la gestión 2003 \$us 5.143 millones de dólares, el mas alto en todo este periodo, a partir del 2004 se revirtió la tendencia con una reducción de la deuda gracias a la renegociación y condonación de la deuda pública externa.
 
 ```{r}
 tab_2005<- data_deuda %>% 
@@ -131,7 +133,6 @@ tab_2005<- data_deuda %>%
   filter(Año > "1981" & Año < "2006")
 
 ```
-
 
 ```{r}
 tab_2005 %>% 
@@ -186,16 +187,15 @@ tab_2005 %>%
 
 ```
 
-### - Tercer Periodo 2006-2023 
-El 2006 Bolivia inicia con la condonación con la totalidad de los préstamos con stock al 31 de diciembre de 2003, por aproximado $us 1.511,3 millones de dólares, en el marco de la Iniciativa de Alivio de Deuda Multilateral aproximadamente por $us 1.744, adicionalmente se registraron condonaciones del BID y la CAF por $us 17,8 millones de dólares. Sin embargo los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, es a partir del 2014 hasta 2023, se registra déficit fiscal,  financiado con el incremento de la deuda pública externa, asi mismo se implemento el [Modelo Económico Social Comunitario Productivo (MESCP)](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf), que consiste en _atribuir al Estado un papel sumamente activo; “el Estado tiene que ser todo”, planificador, empresario, inversionista, banquero, regulador, productor del desarrollo. Pero, además, el Estado tiene la obligación de generar el crecimiento, el desarrollo en todas las instancias del país_. 
-En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos de los hidrocarburíferos (descubrimientos realizados en el primer y segundo periodo), con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el plan de industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas hasta la fecha son deficitarias, llegando a registrar el 2023 $us 13.687 millones de dólares.
+### - Tercer Periodo 2006-2023
+
+El 2006 Bolivia inicia con la condonación con la totalidad de los préstamos con stock al 31 de diciembre de 2003, por aproximado \$us 1.511,3 millones de dólares, en el marco de la Iniciativa de Alivio de Deuda Multilateral aproximadamente por \$us 1.744, adicionalmente se registraron condonaciones del BID y la CAF por \$us 17,8 millones de dólares. Sin embargo los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, es a partir del 2014 hasta 2023, se registra déficit fiscal, financiado con el incremento de la deuda pública externa, asi mismo se implemento el [Modelo Económico Social Comunitario Productivo (MESCP)](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf), que consiste en *atribuir al Estado un papel sumamente activo; “el Estado tiene que ser todo”, planificador, empresario, inversionista, banquero, regulador, productor del desarrollo. Pero, además, el Estado tiene la obligación de generar el crecimiento, el desarrollo en todas las instancias del país*. En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos de los hidrocarburíferos (descubrimientos realizados en el primer y segundo periodo), con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el plan de industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas hasta la fecha son deficitarias, llegando a registrar el 2023 \$us 13.687 millones de dólares.
 
 ```{r}
 tab_2023<- data_deuda %>% 
   select(Presidente, Año,Partido, Deuda.Externa) %>% 
   filter(Año > "2005")
 ```
-
 
 ```{r}
 tab_2023 %>% 
@@ -245,12 +245,10 @@ tab_2023 %>%
 #%>% 
  #gtsave("tab_1.png")
 ```
-### - Concluion  
-El primer periodo 1970-1981 fue caracterizado por gobiernos Militares de factos en un contexto favorable por la elevación de los precios internacionales y acceso a la banca internacional para financiar el gasto público.
-El segundo periodo 1981-2005 fue caracterizado por la consolidación de la democracia con una menor participación del estado para estabilizar la economía, así mismo se realizó ajustes económicos y reformas estructurales con la renegociación y condonación de la deuda pública externa, sin embargo, la tendencia fue moderadamente creciente llegando a registrar 5.142 millones de dólares el 2003 el más alto en todo el periodo. 
-El tercer periodo 2006-2023 Bolivia inicia con la condonación con la totalidad de los préstamos en el marco de la Iniciativa de Alivio de Deuda Multilateral adicionalmente se registraron condonaciones del BID y la CAF. Sin embargo, los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, así mismo se implementó el [Modelo Económico Social Comunitario Productivo (MESCP)](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf)caracterizado
-por _planificador, empresario, inversionista, banquero, regulador, productor del desarrollo_, sin embargo este modelo aprovecha los descubrimientos hidrocarburíferos realizados en el primer y segundo periodo, con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el Plan de Industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas siguen siendo deficitarias.
 
+### - Concluion
+
+El primer periodo 1970-1981 fue caracterizado por gobiernos Militares de factos en un contexto favorable por la elevación de los precios internacionales y acceso a la banca internacional para financiar el gasto público. El segundo periodo 1981-2005 fue caracterizado por la consolidación de la democracia con una menor participación del estado para estabilizar la economía, así mismo se realizó ajustes económicos y reformas estructurales con la renegociación y condonación de la deuda pública externa, sin embargo, la tendencia fue moderadamente creciente llegando a registrar 5.142 millones de dólares el 2003 el más alto en todo el periodo. El tercer periodo 2006-2023 Bolivia inicia con la condonación con la totalidad de los préstamos en el marco de la Iniciativa de Alivio de Deuda Multilateral adicionalmente se registraron condonaciones del BID y la CAF. Sin embargo, los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, así mismo se implementó el [Modelo Económico Social Comunitario Productivo (MESCP)](chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf)caracterizado por *planificador, empresario, inversionista, banquero, regulador, productor del desarrollo*, sin embargo este modelo aprovecha los descubrimientos hidrocarburíferos realizados en el primer y segundo periodo, con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el Plan de Industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas siguen siendo deficitarias.
 
 ```{r}
 graf_1<-data_deuda%>% 
@@ -259,11 +257,9 @@ graf_1<-data_deuda%>%
 
 ```
 
-
 ```{r}
 graf_1$Deuda.Total <- rowSums(graf_1[c(2:3)] ) 
 ```
-
 
 ```{r}
  
@@ -315,7 +311,6 @@ df_long1<- graf_1 %>%
 p2
 #gridExtra::grid.arrange(p1,p2,nrow=2)
 ```
-
 
 ```{r}
 p3 <- ggplot(df_long1, aes(x = Año, y= valor, fill = deu_res)) +
@@ -376,7 +371,6 @@ p4<-data_deuda%>%
                            Año >=2006 ~"Estado Plurinacional y Economia Plural"))
 ```
 
-
 ```{r}
  ggplot(p4, aes(x = Año, y= Deuda.Externa, fill= Etapas)) +
   geom_bar(stat="identity", position="dodge" )+
@@ -401,7 +395,7 @@ p4<-data_deuda%>%
   #theme_light(base_size = 10)+
   #theme_solarized(base_size = 10)+
   #theme_fivethirtyeight(base_size = 10)+
-  theme_economist()+
+  theme_economist()+ 
   scale_fill_economist(breaks=c('Periodo Militar', 
                                 'Periodo de Democracia', 
                                 'Estado Plurinacional y Economia Plural'))+
@@ -443,4 +437,3 @@ p4<-data_deuda%>%
   guides(fill=guide_legend(title=NULL))
  ggsave("deuda.png")
 ```
-

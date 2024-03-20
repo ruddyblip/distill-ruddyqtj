@@ -231,9 +231,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     display: none !important;
   }
 
+  hr.section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0px;
+  }
+
+
+  d-byline {
+    border-top: none;
+  }
+
   d-article {
     padding-top: 2.5rem;
     padding-bottom: 30px;
+    border-top: none;
   }
 
   d-appendix {
@@ -328,6 +340,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article div.sourceCode pre {
     padding-left: 18px;
     font-size: 14px;
+  }
+
+  /* tweak for Pandoc numbered line within distill */
+  d-article pre.numberSource code > span {
+      left: -2em;
   }
 
   d-article pre {
@@ -1089,6 +1106,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // create d-title
     $('.d-title').changeElementType('d-title');
 
+    // separator
+    var separator = '<hr class="section-separator" style="clear: both"/>';
+    // prepend separator above appendix
+    $('.d-byline').before(separator);
+    $('.d-article').before(separator);
+
     // create d-byline
     var byline = $('<d-byline></d-byline>');
     $('.d-byline').replaceWith(byline);
@@ -1166,8 +1189,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     $('.distill-force-highlighting-css').parent().remove();
 
     // remove empty line numbers inserted by pandoc when using a
-    // custom syntax highlighting theme
-    $('code.sourceCode a:empty').remove();
+    // custom syntax highlighting theme, except when numbering line
+    // in code chunk
+    $('pre:not(.numberLines) code.sourceCode a:empty').remove();
 
     // load distill framework
     load_distill_framework();
@@ -1193,12 +1217,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
       // add orcid ids
       $('.authors-affiliations').find('.author').each(function(i, el) {
         var orcid_id = front_matter.authors[i].orcidID;
+        var author_name = front_matter.authors[i].author
         if (orcid_id) {
           var a = $('<a></a>');
           a.attr('href', 'https://orcid.org/' + orcid_id);
           var img = $('<img></img>');
           img.addClass('orcid-id');
-          img.attr('alt', 'ORCID ID');
+          img.attr('alt', author_name ? 'ORCID ID for ' + author_name : 'ORCID ID');
           img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
           a.append(img);
           $(this).append(a);
@@ -1476,7 +1501,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="deudapublicaexterna_files/header-attrs-2.24/header-attrs.js"></script>
+  <script src="deudapublicaexterna_files/header-attrs-2.26/header-attrs.js"></script>
   <script src="deudapublicaexterna_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="deudapublicaexterna_files/popper-2.6.0/popper.min.js"></script>
   <link href="deudapublicaexterna_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1508,6 +1533,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <div class="d-title">
 <h1>Evolución de la Deuda Pública Externa de Bolivia 1970-2023</h1>
+
 <!--radix_placeholder_categories-->
 <div class="dt-tags">
 <div class="dt-tag">articulos de opinion</div>
@@ -1529,12 +1555,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#deuda-pública-externa-de-bolivia">Deuda Pública Externa de Bolivia</a>
+<li><a href="#deuda-pública-externa-de-bolivia" id="toc-deuda-pública-externa-de-bolivia">Deuda Pública Externa de Bolivia</a>
 <ul>
-<li><a href="#primer-periodo-1970-1981">- Primer Periodo 1970-1981</a></li>
-<li><a href="#segundo-periodo-1982-2005">- Segundo Periodo 1982-2005</a></li>
-<li><a href="#tercer-periodo-2006-2023">- Tercer Periodo 2006-2023</a></li>
-<li><a href="#concluion">- Concluion</a></li>
+<li><a href="#primer-periodo-1970-1981" id="toc-primer-periodo-1970-1981">- Primer Periodo 1970-1981</a></li>
+<li><a href="#segundo-periodo-1982-2005" id="toc-segundo-periodo-1982-2005">- Segundo Periodo 1982-2005</a></li>
+<li><a href="#tercer-periodo-2006-2023" id="toc-tercer-periodo-2006-2023">- Tercer Periodo 2006-2023</a></li>
+<li><a href="#concluion" id="toc-concluion">- Concluion</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -1544,7 +1570,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>En ese contexto el endeudamiento público externo tiene una importancia significativa sobre las restricciones que pueda tener la economía boliviana, contraer deuda pública externa no significa obtención de fondos del exterior para poder generar crecimiento y desarrollo, el endeudamiento también implica obligaciones, es decir tener capacidad de pago.</p>
 <p>Entre el 1970-2023 la política de endeudamiento de los diferentes gobiernos ha llevado a una situación preocupante, el déficit y el endeudamiento se tornan insostenibles, afectando a variables económicas que depende del funcionamiento real de la economía. El saldo de la deuda pública externa al 31 de diciembre de 2023, alcanzo a 13.687 millones de dólares, incrementándose en 321% entre el 2006 y 2023.</p>
 <figure>
-<img src="deuda.png" alt="Resultado del grafico realizado con ggplot2" /><figcaption aria-hidden="true">Resultado del grafico realizado con ggplot2</figcaption>
+<img src="deuda.png" alt="Resultado del grafico realizado con ggplot2" />
+<figcaption aria-hidden="true">Resultado del grafico realizado con ggplot2</figcaption>
 </figure>
 <p>Entre 1970–2023, Bolivia atravesó por tres periodos económicos diferentes, en esa line se abordará cada periodo con la elaboración de una tabla con características como; Presidente, Partido al cual perteneció y el monto de la Deuda Pública Externa.</p>
 <h3 id="primer-periodo-1970-1981">- Primer Periodo 1970-1981</h3>
@@ -1559,23 +1586,23 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="nldygotdjy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#nldygotdjy table {
+<div id="jakuphzwfd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jakuphzwfd table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#nldygotdjy thead, #nldygotdjy tbody, #nldygotdjy tfoot, #nldygotdjy tr, #nldygotdjy td, #nldygotdjy th {
+#jakuphzwfd thead, #jakuphzwfd tbody, #jakuphzwfd tfoot, #jakuphzwfd tr, #jakuphzwfd td, #jakuphzwfd th {
   border-style: none;
 }
 
-#nldygotdjy p {
+#jakuphzwfd p {
   margin: 0;
   padding: 0;
 }
 
-#nldygotdjy .gt_table {
+#jakuphzwfd .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -1601,12 +1628,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-left-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_caption {
+#jakuphzwfd .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#nldygotdjy .gt_title {
+#jakuphzwfd .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -1618,7 +1645,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-width: 0;
 }
 
-#nldygotdjy .gt_subtitle {
+#jakuphzwfd .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -1630,7 +1657,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-top-width: 0;
 }
 
-#nldygotdjy .gt_heading {
+#jakuphzwfd .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1642,13 +1669,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#nldygotdjy .gt_bottom_border {
+#jakuphzwfd .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_col_headings {
+#jakuphzwfd .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D5D5D5;
@@ -1663,7 +1690,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#nldygotdjy .gt_col_heading {
+#jakuphzwfd .gt_col_heading {
   color: #FFFFFF;
   background-color: #000000;
   font-size: 100%;
@@ -1683,7 +1710,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   overflow-x: hidden;
 }
 
-#nldygotdjy .gt_column_spanner_outer {
+#jakuphzwfd .gt_column_spanner_outer {
   color: #FFFFFF;
   background-color: #000000;
   font-size: 100%;
@@ -1695,15 +1722,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 4px;
 }
 
-#nldygotdjy .gt_column_spanner_outer:first-child {
+#jakuphzwfd .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#nldygotdjy .gt_column_spanner_outer:last-child {
+#jakuphzwfd .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#nldygotdjy .gt_column_spanner {
+#jakuphzwfd .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D5D5D5;
@@ -1715,11 +1742,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   width: 100%;
 }
 
-#nldygotdjy .gt_spanner_row {
+#jakuphzwfd .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#nldygotdjy .gt_group_heading {
+#jakuphzwfd .gt_group_heading {
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 5px;
@@ -1745,7 +1772,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   text-align: left;
 }
 
-#nldygotdjy .gt_empty_group_heading {
+#jakuphzwfd .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1760,15 +1787,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   vertical-align: middle;
 }
 
-#nldygotdjy .gt_from_md > :first-child {
+#jakuphzwfd .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#nldygotdjy .gt_from_md > :last-child {
+#jakuphzwfd .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#nldygotdjy .gt_row {
+#jakuphzwfd .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -1787,7 +1814,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   overflow-x: hidden;
 }
 
-#nldygotdjy .gt_stub {
+#jakuphzwfd .gt_stub {
   color: #FFFFFF;
   background-color: #929292;
   font-size: 100%;
@@ -1800,7 +1827,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#nldygotdjy .gt_stub_row_group {
+#jakuphzwfd .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1814,15 +1841,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   vertical-align: top;
 }
 
-#nldygotdjy .gt_row_group_first td {
+#jakuphzwfd .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#nldygotdjy .gt_row_group_first th {
+#jakuphzwfd .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#nldygotdjy .gt_summary_row {
+#jakuphzwfd .gt_summary_row {
   color: #FFFFFF;
   background-color: #5F5F5F;
   text-transform: inherit;
@@ -1832,16 +1859,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#nldygotdjy .gt_first_summary_row {
+#jakuphzwfd .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_first_summary_row.thick {
+#jakuphzwfd .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#nldygotdjy .gt_last_summary_row {
+#jakuphzwfd .gt_last_summary_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -1851,7 +1878,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_grand_summary_row {
+#jakuphzwfd .gt_grand_summary_row {
   color: #FFFFFF;
   background-color: #929292;
   text-transform: inherit;
@@ -1861,7 +1888,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#nldygotdjy .gt_first_grand_summary_row {
+#jakuphzwfd .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1871,7 +1898,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-top-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_last_grand_summary_row_top {
+#jakuphzwfd .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1881,11 +1908,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_striped {
+#jakuphzwfd .gt_striped {
   background-color: #F4F4F4;
 }
 
-#nldygotdjy .gt_table_body {
+#jakuphzwfd .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D5D5D5;
@@ -1894,7 +1921,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D5D5D5;
 }
 
-#nldygotdjy .gt_footnotes {
+#jakuphzwfd .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1908,7 +1935,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#nldygotdjy .gt_footnote {
+#jakuphzwfd .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1917,7 +1944,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#nldygotdjy .gt_sourcenotes {
+#jakuphzwfd .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1931,7 +1958,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#nldygotdjy .gt_sourcenote {
+#jakuphzwfd .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1939,63 +1966,63 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#nldygotdjy .gt_left {
+#jakuphzwfd .gt_left {
   text-align: left;
 }
 
-#nldygotdjy .gt_center {
+#jakuphzwfd .gt_center {
   text-align: center;
 }
 
-#nldygotdjy .gt_right {
+#jakuphzwfd .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#nldygotdjy .gt_font_normal {
+#jakuphzwfd .gt_font_normal {
   font-weight: normal;
 }
 
-#nldygotdjy .gt_font_bold {
+#jakuphzwfd .gt_font_bold {
   font-weight: bold;
 }
 
-#nldygotdjy .gt_font_italic {
+#jakuphzwfd .gt_font_italic {
   font-style: italic;
 }
 
-#nldygotdjy .gt_super {
+#jakuphzwfd .gt_super {
   font-size: 65%;
 }
 
-#nldygotdjy .gt_footnote_marks {
+#jakuphzwfd .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#nldygotdjy .gt_asterisk {
+#jakuphzwfd .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#nldygotdjy .gt_indent_1 {
+#jakuphzwfd .gt_indent_1 {
   text-indent: 5px;
 }
 
-#nldygotdjy .gt_indent_2 {
+#jakuphzwfd .gt_indent_2 {
   text-indent: 10px;
 }
 
-#nldygotdjy .gt_indent_3 {
+#jakuphzwfd .gt_indent_3 {
   text-indent: 15px;
 }
 
-#nldygotdjy .gt_indent_4 {
+#jakuphzwfd .gt_indent_4 {
   text-indent: 20px;
 }
 
-#nldygotdjy .gt_indent_5 {
+#jakuphzwfd .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -2140,23 +2167,23 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="pkrivpraoy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#pkrivpraoy table {
+<div id="gpazxycbdx" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#gpazxycbdx table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#pkrivpraoy thead, #pkrivpraoy tbody, #pkrivpraoy tfoot, #pkrivpraoy tr, #pkrivpraoy td, #pkrivpraoy th {
+#gpazxycbdx thead, #gpazxycbdx tbody, #gpazxycbdx tfoot, #gpazxycbdx tr, #gpazxycbdx td, #gpazxycbdx th {
   border-style: none;
 }
 
-#pkrivpraoy p {
+#gpazxycbdx p {
   margin: 0;
   padding: 0;
 }
 
-#pkrivpraoy .gt_table {
+#gpazxycbdx .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2182,12 +2209,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-left-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_caption {
+#gpazxycbdx .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#pkrivpraoy .gt_title {
+#gpazxycbdx .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2199,7 +2226,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-width: 0;
 }
 
-#pkrivpraoy .gt_subtitle {
+#gpazxycbdx .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2211,7 +2238,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-top-width: 0;
 }
 
-#pkrivpraoy .gt_heading {
+#gpazxycbdx .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2223,13 +2250,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#pkrivpraoy .gt_bottom_border {
+#gpazxycbdx .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_col_headings {
+#gpazxycbdx .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D5D5D5;
@@ -2244,7 +2271,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#pkrivpraoy .gt_col_heading {
+#gpazxycbdx .gt_col_heading {
   color: #FFFFFF;
   background-color: #000000;
   font-size: 100%;
@@ -2264,7 +2291,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   overflow-x: hidden;
 }
 
-#pkrivpraoy .gt_column_spanner_outer {
+#gpazxycbdx .gt_column_spanner_outer {
   color: #FFFFFF;
   background-color: #000000;
   font-size: 100%;
@@ -2276,15 +2303,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 4px;
 }
 
-#pkrivpraoy .gt_column_spanner_outer:first-child {
+#gpazxycbdx .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#pkrivpraoy .gt_column_spanner_outer:last-child {
+#gpazxycbdx .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#pkrivpraoy .gt_column_spanner {
+#gpazxycbdx .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D5D5D5;
@@ -2296,11 +2323,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   width: 100%;
 }
 
-#pkrivpraoy .gt_spanner_row {
+#gpazxycbdx .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#pkrivpraoy .gt_group_heading {
+#gpazxycbdx .gt_group_heading {
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 5px;
@@ -2326,7 +2353,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   text-align: left;
 }
 
-#pkrivpraoy .gt_empty_group_heading {
+#gpazxycbdx .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2341,15 +2368,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   vertical-align: middle;
 }
 
-#pkrivpraoy .gt_from_md > :first-child {
+#gpazxycbdx .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#pkrivpraoy .gt_from_md > :last-child {
+#gpazxycbdx .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#pkrivpraoy .gt_row {
+#gpazxycbdx .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -2368,7 +2395,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   overflow-x: hidden;
 }
 
-#pkrivpraoy .gt_stub {
+#gpazxycbdx .gt_stub {
   color: #FFFFFF;
   background-color: #929292;
   font-size: 100%;
@@ -2381,7 +2408,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#pkrivpraoy .gt_stub_row_group {
+#gpazxycbdx .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2395,15 +2422,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   vertical-align: top;
 }
 
-#pkrivpraoy .gt_row_group_first td {
+#gpazxycbdx .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#pkrivpraoy .gt_row_group_first th {
+#gpazxycbdx .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#pkrivpraoy .gt_summary_row {
+#gpazxycbdx .gt_summary_row {
   color: #FFFFFF;
   background-color: #5F5F5F;
   text-transform: inherit;
@@ -2413,16 +2440,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#pkrivpraoy .gt_first_summary_row {
+#gpazxycbdx .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_first_summary_row.thick {
+#gpazxycbdx .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#pkrivpraoy .gt_last_summary_row {
+#gpazxycbdx .gt_last_summary_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -2432,7 +2459,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_grand_summary_row {
+#gpazxycbdx .gt_grand_summary_row {
   color: #FFFFFF;
   background-color: #929292;
   text-transform: inherit;
@@ -2442,7 +2469,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#pkrivpraoy .gt_first_grand_summary_row {
+#gpazxycbdx .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2452,7 +2479,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-top-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_last_grand_summary_row_top {
+#gpazxycbdx .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2462,11 +2489,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_striped {
+#gpazxycbdx .gt_striped {
   background-color: #F4F4F4;
 }
 
-#pkrivpraoy .gt_table_body {
+#gpazxycbdx .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D5D5D5;
@@ -2475,7 +2502,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D5D5D5;
 }
 
-#pkrivpraoy .gt_footnotes {
+#gpazxycbdx .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2489,7 +2516,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#pkrivpraoy .gt_footnote {
+#gpazxycbdx .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -2498,7 +2525,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#pkrivpraoy .gt_sourcenotes {
+#gpazxycbdx .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2512,7 +2539,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#pkrivpraoy .gt_sourcenote {
+#gpazxycbdx .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2520,63 +2547,63 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#pkrivpraoy .gt_left {
+#gpazxycbdx .gt_left {
   text-align: left;
 }
 
-#pkrivpraoy .gt_center {
+#gpazxycbdx .gt_center {
   text-align: center;
 }
 
-#pkrivpraoy .gt_right {
+#gpazxycbdx .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#pkrivpraoy .gt_font_normal {
+#gpazxycbdx .gt_font_normal {
   font-weight: normal;
 }
 
-#pkrivpraoy .gt_font_bold {
+#gpazxycbdx .gt_font_bold {
   font-weight: bold;
 }
 
-#pkrivpraoy .gt_font_italic {
+#gpazxycbdx .gt_font_italic {
   font-style: italic;
 }
 
-#pkrivpraoy .gt_super {
+#gpazxycbdx .gt_super {
   font-size: 65%;
 }
 
-#pkrivpraoy .gt_footnote_marks {
+#gpazxycbdx .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#pkrivpraoy .gt_asterisk {
+#gpazxycbdx .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#pkrivpraoy .gt_indent_1 {
+#gpazxycbdx .gt_indent_1 {
   text-indent: 5px;
 }
 
-#pkrivpraoy .gt_indent_2 {
+#gpazxycbdx .gt_indent_2 {
   text-indent: 10px;
 }
 
-#pkrivpraoy .gt_indent_3 {
+#gpazxycbdx .gt_indent_3 {
   text-indent: 15px;
 }
 
-#pkrivpraoy .gt_indent_4 {
+#gpazxycbdx .gt_indent_4 {
   text-indent: 20px;
 }
 
-#pkrivpraoy .gt_indent_5 {
+#gpazxycbdx .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -2775,29 +2802,28 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 </div>
 <h3 id="tercer-periodo-2006-2023">- Tercer Periodo 2006-2023</h3>
-<p>El 2006 Bolivia inicia con la condonación con la totalidad de los préstamos con stock al 31 de diciembre de 2003, por aproximado $us 1.511,3 millones de dólares, en el marco de la Iniciativa de Alivio de Deuda Multilateral aproximadamente por $us 1.744, adicionalmente se registraron condonaciones del BID y la CAF por $us 17,8 millones de dólares. Sin embargo los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, es a partir del 2014 hasta 2023, se registra déficit fiscal, financiado con el incremento de la deuda pública externa, asi mismo se implemento el <a href="chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf">Modelo Económico Social Comunitario Productivo (MESCP)</a>, que consiste en <em>atribuir al Estado un papel sumamente activo; “el Estado tiene que ser todo”, planificador, empresario, inversionista, banquero, regulador, productor del desarrollo. Pero, además, el Estado tiene la obligación de generar el crecimiento, el desarrollo en todas las instancias del país</em>.
-En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos de los hidrocarburíferos (descubrimientos realizados en el primer y segundo periodo), con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el plan de industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas hasta la fecha son deficitarias, llegando a registrar el 2023 $us 13.687 millones de dólares.</p>
+<p>El 2006 Bolivia inicia con la condonación con la totalidad de los préstamos con stock al 31 de diciembre de 2003, por aproximado $us 1.511,3 millones de dólares, en el marco de la Iniciativa de Alivio de Deuda Multilateral aproximadamente por $us 1.744, adicionalmente se registraron condonaciones del BID y la CAF por $us 17,8 millones de dólares. Sin embargo los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, es a partir del 2014 hasta 2023, se registra déficit fiscal, financiado con el incremento de la deuda pública externa, asi mismo se implemento el <a href="chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf">Modelo Económico Social Comunitario Productivo (MESCP)</a>, que consiste en <em>atribuir al Estado un papel sumamente activo; “el Estado tiene que ser todo”, planificador, empresario, inversionista, banquero, regulador, productor del desarrollo. Pero, además, el Estado tiene la obligación de generar el crecimiento, el desarrollo en todas las instancias del país</em>. En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos de los hidrocarburíferos (descubrimientos realizados en el primer y segundo periodo), con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el plan de industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas hasta la fecha son deficitarias, llegando a registrar el 2023 $us 13.687 millones de dólares.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="dmxebrabsp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#dmxebrabsp table {
+<div id="hlztthkgvw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#hlztthkgvw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#dmxebrabsp thead, #dmxebrabsp tbody, #dmxebrabsp tfoot, #dmxebrabsp tr, #dmxebrabsp td, #dmxebrabsp th {
+#hlztthkgvw thead, #hlztthkgvw tbody, #hlztthkgvw tfoot, #hlztthkgvw tr, #hlztthkgvw td, #hlztthkgvw th {
   border-style: none;
 }
 
-#dmxebrabsp p {
+#hlztthkgvw p {
   margin: 0;
   padding: 0;
 }
 
-#dmxebrabsp .gt_table {
+#hlztthkgvw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -2823,12 +2849,12 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-left-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_caption {
+#hlztthkgvw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#dmxebrabsp .gt_title {
+#hlztthkgvw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2840,7 +2866,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-bottom-width: 0;
 }
 
-#dmxebrabsp .gt_subtitle {
+#hlztthkgvw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -2852,7 +2878,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-top-width: 0;
 }
 
-#dmxebrabsp .gt_heading {
+#hlztthkgvw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -2864,13 +2890,13 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-right-color: #D3D3D3;
 }
 
-#dmxebrabsp .gt_bottom_border {
+#hlztthkgvw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_col_headings {
+#hlztthkgvw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D5D5D5;
@@ -2885,7 +2911,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-right-color: #D3D3D3;
 }
 
-#dmxebrabsp .gt_col_heading {
+#hlztthkgvw .gt_col_heading {
   color: #FFFFFF;
   background-color: #000000;
   font-size: 100%;
@@ -2905,7 +2931,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   overflow-x: hidden;
 }
 
-#dmxebrabsp .gt_column_spanner_outer {
+#hlztthkgvw .gt_column_spanner_outer {
   color: #FFFFFF;
   background-color: #000000;
   font-size: 100%;
@@ -2917,15 +2943,15 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   padding-right: 4px;
 }
 
-#dmxebrabsp .gt_column_spanner_outer:first-child {
+#hlztthkgvw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#dmxebrabsp .gt_column_spanner_outer:last-child {
+#hlztthkgvw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#dmxebrabsp .gt_column_spanner {
+#hlztthkgvw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D5D5D5;
@@ -2937,11 +2963,11 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   width: 100%;
 }
 
-#dmxebrabsp .gt_spanner_row {
+#hlztthkgvw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#dmxebrabsp .gt_group_heading {
+#hlztthkgvw .gt_group_heading {
   padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 5px;
@@ -2967,7 +2993,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   text-align: left;
 }
 
-#dmxebrabsp .gt_empty_group_heading {
+#hlztthkgvw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2982,15 +3008,15 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   vertical-align: middle;
 }
 
-#dmxebrabsp .gt_from_md > :first-child {
+#hlztthkgvw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#dmxebrabsp .gt_from_md > :last-child {
+#hlztthkgvw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#dmxebrabsp .gt_row {
+#hlztthkgvw .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -3009,7 +3035,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   overflow-x: hidden;
 }
 
-#dmxebrabsp .gt_stub {
+#hlztthkgvw .gt_stub {
   color: #FFFFFF;
   background-color: #929292;
   font-size: 100%;
@@ -3022,7 +3048,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   padding-right: 5px;
 }
 
-#dmxebrabsp .gt_stub_row_group {
+#hlztthkgvw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -3036,15 +3062,15 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   vertical-align: top;
 }
 
-#dmxebrabsp .gt_row_group_first td {
+#hlztthkgvw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#dmxebrabsp .gt_row_group_first th {
+#hlztthkgvw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#dmxebrabsp .gt_summary_row {
+#hlztthkgvw .gt_summary_row {
   color: #FFFFFF;
   background-color: #5F5F5F;
   text-transform: inherit;
@@ -3054,16 +3080,16 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   padding-right: 5px;
 }
 
-#dmxebrabsp .gt_first_summary_row {
+#hlztthkgvw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_first_summary_row.thick {
+#hlztthkgvw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#dmxebrabsp .gt_last_summary_row {
+#hlztthkgvw .gt_last_summary_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -3073,7 +3099,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-bottom-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_grand_summary_row {
+#hlztthkgvw .gt_grand_summary_row {
   color: #FFFFFF;
   background-color: #929292;
   text-transform: inherit;
@@ -3083,7 +3109,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   padding-right: 5px;
 }
 
-#dmxebrabsp .gt_first_grand_summary_row {
+#hlztthkgvw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3093,7 +3119,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-top-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_last_grand_summary_row_top {
+#hlztthkgvw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -3103,11 +3129,11 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-bottom-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_striped {
+#hlztthkgvw .gt_striped {
   background-color: #F4F4F4;
 }
 
-#dmxebrabsp .gt_table_body {
+#hlztthkgvw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D5D5D5;
@@ -3116,7 +3142,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-bottom-color: #D5D5D5;
 }
 
-#dmxebrabsp .gt_footnotes {
+#hlztthkgvw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3130,7 +3156,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-right-color: #D3D3D3;
 }
 
-#dmxebrabsp .gt_footnote {
+#hlztthkgvw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -3139,7 +3165,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   padding-right: 5px;
 }
 
-#dmxebrabsp .gt_sourcenotes {
+#hlztthkgvw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -3153,7 +3179,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   border-right-color: #D3D3D3;
 }
 
-#dmxebrabsp .gt_sourcenote {
+#hlztthkgvw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -3161,63 +3187,63 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
   padding-right: 5px;
 }
 
-#dmxebrabsp .gt_left {
+#hlztthkgvw .gt_left {
   text-align: left;
 }
 
-#dmxebrabsp .gt_center {
+#hlztthkgvw .gt_center {
   text-align: center;
 }
 
-#dmxebrabsp .gt_right {
+#hlztthkgvw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#dmxebrabsp .gt_font_normal {
+#hlztthkgvw .gt_font_normal {
   font-weight: normal;
 }
 
-#dmxebrabsp .gt_font_bold {
+#hlztthkgvw .gt_font_bold {
   font-weight: bold;
 }
 
-#dmxebrabsp .gt_font_italic {
+#hlztthkgvw .gt_font_italic {
   font-style: italic;
 }
 
-#dmxebrabsp .gt_super {
+#hlztthkgvw .gt_super {
   font-size: 65%;
 }
 
-#dmxebrabsp .gt_footnote_marks {
+#hlztthkgvw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#dmxebrabsp .gt_asterisk {
+#hlztthkgvw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#dmxebrabsp .gt_indent_1 {
+#hlztthkgvw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#dmxebrabsp .gt_indent_2 {
+#hlztthkgvw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#dmxebrabsp .gt_indent_3 {
+#hlztthkgvw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#dmxebrabsp .gt_indent_4 {
+#hlztthkgvw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#dmxebrabsp .gt_indent_5 {
+#hlztthkgvw .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -3359,10 +3385,7 @@ En este periodo Bolivia vivió de una bonanza económica gracias a los ingresos 
 </div>
 </div>
 <h3 id="concluion">- Concluion</h3>
-<p>El primer periodo 1970-1981 fue caracterizado por gobiernos Militares de factos en un contexto favorable por la elevación de los precios internacionales y acceso a la banca internacional para financiar el gasto público.
-El segundo periodo 1981-2005 fue caracterizado por la consolidación de la democracia con una menor participación del estado para estabilizar la economía, así mismo se realizó ajustes económicos y reformas estructurales con la renegociación y condonación de la deuda pública externa, sin embargo, la tendencia fue moderadamente creciente llegando a registrar 5.142 millones de dólares el 2003 el más alto en todo el periodo.
-El tercer periodo 2006-2023 Bolivia inicia con la condonación con la totalidad de los préstamos en el marco de la Iniciativa de Alivio de Deuda Multilateral adicionalmente se registraron condonaciones del BID y la CAF. Sin embargo, los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, así mismo se implementó el <a href="chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf">Modelo Económico Social Comunitario Productivo (MESCP)</a>caracterizado
-por <em>planificador, empresario, inversionista, banquero, regulador, productor del desarrollo</em>, sin embargo este modelo aprovecha los descubrimientos hidrocarburíferos realizados en el primer y segundo periodo, con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el Plan de Industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas siguen siendo deficitarias.</p>
+<p>El primer periodo 1970-1981 fue caracterizado por gobiernos Militares de factos en un contexto favorable por la elevación de los precios internacionales y acceso a la banca internacional para financiar el gasto público. El segundo periodo 1981-2005 fue caracterizado por la consolidación de la democracia con una menor participación del estado para estabilizar la economía, así mismo se realizó ajustes económicos y reformas estructurales con la renegociación y condonación de la deuda pública externa, sin embargo, la tendencia fue moderadamente creciente llegando a registrar 5.142 millones de dólares el 2003 el más alto en todo el periodo. El tercer periodo 2006-2023 Bolivia inicia con la condonación con la totalidad de los préstamos en el marco de la Iniciativa de Alivio de Deuda Multilateral adicionalmente se registraron condonaciones del BID y la CAF. Sin embargo, los gobiernos recurrieron al endeudamiento con una tendencia creciente, a pesar de registrar entre 2006-2013 superávit fiscal, así mismo se implementó el <a href="chrome-extension://efaidnbmnnnibpcajpcglclefindmkaj/https://repositorio.economiayfinanzas.gob.bo/documentos/2018/UCS/materialesElaborados/publicaciones/modelo_decima_edicion.pdf">Modelo Económico Social Comunitario Productivo (MESCP)</a>caracterizado por <em>planificador, empresario, inversionista, banquero, regulador, productor del desarrollo</em>, sin embargo este modelo aprovecha los descubrimientos hidrocarburíferos realizados en el primer y segundo periodo, con el agotamiento de la bonanza petrolera durante este periodo, el gobierno improvisó algunos planes para la captación de ingresos, creando empresas públicas y amplió la intervención estatal con el Plan de Industrialización excluyendo los sectores rentables como YPFB, sin embargo estas empresas públicas siguen siendo deficitarias.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
